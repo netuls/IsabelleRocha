@@ -1316,3 +1316,20 @@ input, select, textarea {
 @media (min-width: 769px) and (max-width: 1100px) {
   .plans-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ================== HERO SUB: AJUSTE MOBILE (evita cortar nas laterais) ================== */
+@media (max-width: 768px) {
+  .hero-sub {
+    font-size: 10px;
+    gap: 6px;
+    row-gap: 6px;
+    flex-wrap: wrap;
+    padding: 0 16px;
+  }
+  .hero-sub-item { letter-spacing: 2px; }
+}
+
+@media (max-width: 400px) {
+  .hero-sub { font-size: 9px; }
+  .hero-sub-item { letter-spacing: 1px; }
+}
