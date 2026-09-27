@@ -36,6 +36,14 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+/* Evita corte/scroll lateral no Android e iOS */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
 body {
   background: var(--black);
   color: var(--white);
@@ -215,6 +223,8 @@ input, select, textarea {
   z-index: 5;
   text-align: center;
   padding: 0 20px;
+  width: 100%;
+  max-width: 100%;
   animation: fadeUp 1s ease both;
 }
 
@@ -260,6 +270,10 @@ input, select, textarea {
   margin-top: 10px;
 }
 
+/* ── Hero sub com itens animados ──
+   FIX: flex items têm min-width:auto por padrão, então mesmo com
+   flex-wrap eles não encolhiam e a linha ficava cortada nas bordas
+   (o .hero tem overflow:hidden). min-width:0 + flex-wrap resolve. */
 .hero-sub {
   margin: 20px 0 36px;
   font-family: var(--font-head);
@@ -268,6 +282,26 @@ input, select, textarea {
   color: var(--gray2);
   text-transform: uppercase;
   animation: fadeUp 1s 0.4s ease both;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 8px;
+  gap: 12px;
+  width: 100%;
+  max-width: 100%;
+}
+.hero-sub-dot {
+  color: var(--accent);
+  opacity: 0.6;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.hero-sub-item {
+  letter-spacing: 8px;
+  white-space: nowrap;
+  min-width: 0; /* corrige o overflow no flex */
+  flex-shrink: 1;
 }
 
 .btn-hero {
@@ -308,6 +342,30 @@ input, select, textarea {
 @keyframes bounce {
   0%, 100% { transform: translateX(-50%) translateY(0); }
   50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ── Slideshow dots ── */
+.hero-dots {
+  position: absolute;
+  bottom: calc(60px + var(--sab));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+.hero-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  border: 1px solid rgba(255,255,255,0.3);
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+.hero-dot.active {
+  background: var(--white);
+  width: 20px;
+  border-radius: 3px;
 }
 
 /* ================== SECTIONS ================== */
@@ -908,140 +966,6 @@ input, select, textarea {
   text-transform: uppercase;
 }
 
-/* ================== RESPONSIVE MOBILE ================== */
-@media (max-width: 768px) {
-  /* Navbar */
-  .navbar { padding: 14px 20px; padding-top: calc(14px + var(--sat)); }
-  .nav-hamburger { display: flex; }
-  .nav-links {
-    position: fixed;
-    top: 0; right: 0; bottom: 0;
-    width: min(320px, 80vw);
-    background: var(--dark2);
-    border-left: 1px solid rgba(255,255,255,0.08);
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 8px;
-    padding: 40px 32px;
-    padding-top: calc(40px + var(--sat));
-    padding-bottom: calc(40px + var(--sab));
-    transform: translateX(100%);
-    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-    z-index: 160;
-  }
-  .nav-links.open { transform: translateX(0); }
-  .nav-links a {
-    font-size: 18px;
-    letter-spacing: 3px;
-    padding: 14px 0;
-    width: 100%;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    color: var(--white-dim);
-  }
-  .nav-links a:last-child { border-bottom: none; }
-  .btn-nav {
-    margin-top: 12px;
-    padding: 14px 0 !important;
-    text-align: center;
-    width: 100%;
-  }
-
-  /* Hero */
-  .hero { height: 100svh; }
-  .hero-title { font-size: clamp(72px, 22vw, 120px); }
-  .hero-title span { letter-spacing: 6px; }
-
-  /* Sections */
-  .section { padding: 70px 20px; }
-  .services-section,
-  .plans-section,
-  .booking-section { padding: 70px 20px; }
-
-  /* Services */
-  .services-grid { grid-template-columns: 1fr; }
-  .service-card { padding: 18px 20px; }
-
-  /* Plans — scroll horizontal suave */
-  .plans-grid {
-    grid-template-columns: 1fr;
-    gap: 1px;
-  }
-  .plan-card { padding: 32px 24px; }
-
-  /* Booking */
-  .booking-card { padding: 28px 20px; }
-  .step-line { min-width: 20px; }
-  .step p { font-size: 9px; }
-
-  /* Modal vira bottom sheet */
-  .modal-overlay { align-items: flex-end; }
-  .modal-box {
-    border-radius: 16px 16px 0 0;
-    padding: 32px 24px;
-    padding-bottom: calc(32px + var(--sab));
-  }
-  .plan-modal-actions { flex-direction: column; }
-  .btn-plan-cancel, .btn-plan-confirm { flex: unset; }
-}
-
-@media (max-width: 480px) {
-  .section-header { margin-bottom: 48px; }
-  .form-row { flex-direction: column; }
-  .btn-back, .btn-next, .btn-confirm { flex: unset; }
-}
-
-/* Desktop mantém modal centralizado */
-@media (min-width: 769px) {
-  .modal-overlay { align-items: center; }
-  .modal-box {
-    border-radius: 16px;
-    max-width: 460px;
-    padding-bottom: 40px;
-  }
-  .service-card:hover { background: var(--dark3); padding-right: 44px; }
-  .service-card:hover::after { opacity: 1; transform: translateX(0); }
-  .service-card:hover .service-name { color: var(--white); }
-  .service-card:hover .service-price { color: var(--accent); }
-  .btn-plan:hover {
-    background: var(--dark4);
-    color: var(--white);
-    border-color: rgba(255,255,255,0.3);
-    transform: translateY(-2px);
-  }
-  .plan-card.featured .btn-plan:hover { background: var(--gray); border-color: var(--gray); }
-  .btn-nav:hover { background: var(--dark3) !important; border-color: rgba(255,255,255,0.3) !important; transform: translateY(-2px); }
-}
-
-/* ── Slideshow dots ── */
-.hero-dots {
-  position: absolute;
-  bottom: calc(60px + var(--sab));
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  z-index: 10;
-}
-.hero-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.3);
-  border: 1px solid rgba(255,255,255,0.3);
-  transition: all 0.4s ease;
-  cursor: pointer;
-}
-.hero-dot.active {
-  background: var(--white);
-  width: 20px;
-  border-radius: 3px;
-}
-
-/* ── Hero sub com itens animados ── */
-.hero-sub { display: flex; align-items: center; justify-content: center; gap: 12px; }
-.hero-sub-dot { color: var(--accent); opacity: 0.6; font-size: 10px; }
-.hero-sub-item { letter-spacing: 8px; }
-
 /* ================== SEÇÃO "NOSSO TRABALHO" — CARROSSEL CONTÍNUO ================== */
 .cortes-section {
   padding-bottom: 80px;
@@ -1095,14 +1019,6 @@ input, select, textarea {
   background-position: center center;
   background-repeat: no-repeat;
   background-color: var(--black);
-}
-
-@media (max-width: 768px) {
-  .cortes-slide { width: 220px; height: 300px; margin-right: 10px; }
-  .cortes-slider-wrap {
-    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
-            mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
-  }
 }
 
 /* ================== AUTH BAR ================== */
@@ -1302,8 +1218,101 @@ input, select, textarea {
   transform: translateX(-50%) translateY(0);
 }
 
-/* ================== RESPONSIVE AUTH ================== */
+/* ================== RESPONSIVE MOBILE ================== */
 @media (max-width: 768px) {
+  /* Navbar */
+  .navbar { padding: 14px 20px; padding-top: calc(14px + var(--sat)); }
+  .nav-hamburger { display: flex; }
+  .nav-links {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: min(320px, 80vw);
+    background: var(--dark2);
+    border-left: 1px solid rgba(255,255,255,0.08);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+    padding: 40px 32px;
+    padding-top: calc(40px + var(--sat));
+    padding-bottom: calc(40px + var(--sab));
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    z-index: 160;
+  }
+  .nav-links.open { transform: translateX(0); }
+  .nav-links a {
+    font-size: 18px;
+    letter-spacing: 3px;
+    padding: 14px 0;
+    width: 100%;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: var(--white-dim);
+  }
+  .nav-links a:last-child { border-bottom: none; }
+  .btn-nav {
+    margin-top: 12px;
+    padding: 14px 0 !important;
+    text-align: center;
+    width: 100%;
+  }
+
+  /* Hero */
+  .hero { height: 100svh; }
+  .hero-title { font-size: clamp(72px, 22vw, 120px); }
+  .hero-title span { letter-spacing: 6px; }
+
+  /* Hero sub — evita cortar nas laterais */
+  .hero-sub {
+    font-size: 10px;
+    gap: 6px;
+    row-gap: 8px;
+    flex-wrap: wrap;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+  .hero-sub-item { letter-spacing: 2px; }
+
+  /* Sections */
+  .section { padding: 70px 20px; }
+  .services-section,
+  .plans-section,
+  .booking-section { padding: 70px 20px; }
+
+  /* Services */
+  .services-grid { grid-template-columns: 1fr; }
+  .service-card { padding: 18px 20px; }
+
+  /* Plans — scroll horizontal suave */
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 1px;
+  }
+  .plan-card { padding: 32px 24px; }
+
+  /* Booking */
+  .booking-card { padding: 28px 20px; }
+  .step-line { min-width: 20px; }
+  .step p { font-size: 9px; }
+
+  /* Modal vira bottom sheet */
+  .modal-overlay { align-items: flex-end; }
+  .modal-box {
+    border-radius: 16px 16px 0 0;
+    padding: 32px 24px;
+    padding-bottom: calc(32px + var(--sab));
+  }
+  .plan-modal-actions { flex-direction: column; }
+  .btn-plan-cancel, .btn-plan-confirm { flex: unset; }
+
+  /* Carrossel */
+  .cortes-slide { width: 220px; height: 300px; margin-right: 10px; }
+  .cortes-slider-wrap {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+  }
+
+  /* Auth bar */
   .auth-bar-wrap { padding: 12px 20px; }
   .auth-bar { gap: 10px; }
   .auth-msg { font-size: 12px; }
@@ -1312,24 +1321,40 @@ input, select, textarea {
   .btn-cancelar { width: 100%; }
 }
 
-/* ================== PLANOS: TABLET (2 por linha) ================== */
-@media (min-width: 769px) and (max-width: 1100px) {
-  .plans-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* ================== HERO SUB: AJUSTE MOBILE (evita cortar nas laterais) ================== */
-@media (max-width: 768px) {
-  .hero-sub {
-    font-size: 10px;
-    gap: 6px;
-    row-gap: 6px;
-    flex-wrap: wrap;
-    padding: 0 16px;
-  }
-  .hero-sub-item { letter-spacing: 2px; }
+@media (max-width: 480px) {
+  .section-header { margin-bottom: 48px; }
+  .form-row { flex-direction: column; }
+  .btn-back, .btn-next, .btn-confirm { flex: unset; }
 }
 
 @media (max-width: 400px) {
   .hero-sub { font-size: 9px; }
   .hero-sub-item { letter-spacing: 1px; }
+}
+
+/* Desktop mantém modal centralizado */
+@media (min-width: 769px) {
+  .modal-overlay { align-items: center; }
+  .modal-box {
+    border-radius: 16px;
+    max-width: 460px;
+    padding-bottom: 40px;
+  }
+  .service-card:hover { background: var(--dark3); padding-right: 44px; }
+  .service-card:hover::after { opacity: 1; transform: translateX(0); }
+  .service-card:hover .service-name { color: var(--white); }
+  .service-card:hover .service-price { color: var(--accent); }
+  .btn-plan:hover {
+    background: var(--dark4);
+    color: var(--white);
+    border-color: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+  }
+  .plan-card.featured .btn-plan:hover { background: var(--gray); border-color: var(--gray); }
+  .btn-nav:hover { background: var(--dark3) !important; border-color: rgba(255,255,255,0.3) !important; transform: translateY(-2px); }
+}
+
+/* ================== PLANOS: TABLET (2 por linha) ================== */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .plans-grid { grid-template-columns: repeat(2, 1fr); }
 }
