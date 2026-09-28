@@ -433,6 +433,7 @@ function aplicarAjustes(o) {
   if (typeof o.planosAtivos === 'boolean') BARBEARIA.planosAtivos = o.planosAtivos;
   if (Array.isArray(o.planos)) BARBEARIA.planos = o.planos;
   if ('logo' in o) BARBEARIA.logo = o.logo || '';
+  if (o.politicas && typeof o.politicas === 'object') BARBEARIA.politicas = Object.assign({}, BARBEARIA.politicas, o.politicas);
   if (FONTES_TOPO.some(f => f.id === o.fonte)) BARBEARIA.fonte = o.fonte;   // letra do nome no topo do site
   // Cores escolhidas no painel (aba Ajustes): { destaque, fundo }. Sem elas, vale o que foi escolhido na criação.
   const cs = o.cores;
@@ -441,6 +442,18 @@ function aplicarAjustes(o) {
   TEMA_BARBEARIA.definir(BARBEARIA.tema);
   aplicarFonteTopo();
 }
+// Regras de agendamento, fidelidade e mensagens. O dono muda tudo isso na aba Ajustes do painel.
+BARBEARIA.politicas = Object.assign({
+  sinalAtivo: true, sinalPct: 30, sinalMinPreco: 0, sinalTotalAcima: 0,   // sinal via Pix ao agendar (pagamento total acima de R$ X, se > 0)
+  cancelHoras: 2,                                                          // prazo mínimo (horas) para cancelar/remarcar pelo site; 0 = sem prazo
+  fidelAtivo: true, fidelCada: 5, fidelDescPct: 20,                        // a cada N atendimentos pagos, o próximo tem X% de desconto
+  aniversarioDescPct: 10,
+  avalLink: '',                                                            // link de avaliação (ex.: Google Meu Negócio)
+  msgAniversario: 'Olá, {nome}! Feliz aniversário! 🎉 A equipe de {salao} preparou um presente: {desconto} de desconto no seu próximo atendimento este mês. É só agendar pelo site.',
+  msgRetorno: 'Olá, {nome}! Faz um tempinho que a gente não te vê por aqui ({salao}). Bora renovar o olhar? Agende seu horário pelo site quando quiser.',
+  msgAvaliacao: 'Olá, {nome}! Obrigado pela visita ({salao}). Se gostou do atendimento, pode nos avaliar? Leva menos de um minuto: {link}',
+}, BARBEARIA.politicas || {});
+
 try { aplicarAjustes(JSON.parse(localStorage.getItem(AJUSTES_CACHE_KEY) || 'null')); } catch (e) { /* sem cache */ }
 aplicarFonteTopo();   // primeira visita (sem cache): usa a letra escolhida na criação do site
 
