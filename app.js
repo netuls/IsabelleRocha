@@ -1,3 +1,25 @@
+// ── Recursos novos (antes/depois, avaliação, aviso do sinal) ─────────────────────
+// Este site foi criado antes desses recursos: em vez de mexer no index.html e no style.css,
+// o próprio app.js cria as seções e o CSS que faltam (e não faz nada se o index.html já os tiver).
+(function () {
+  if (!document.getElementById('novos-recursos-css')) {
+    const st = document.createElement('style'); st.id = 'novos-recursos-css';
+    st.textContent = "/* ── Fidelidade, sinal, remarcar, antes/depois, avaliação ── */\n.preco-antigo { opacity:.5; font-size:.8em; margin-right:4px; }\n.fid-box { background:#181818; border:1px solid #303030; border-radius:8px; padding:12px 14px; margin:0 0 14px; display:flex; flex-direction:column; gap:6px; font-family:'Roboto',sans-serif; font-size:13px; color:#ACACAC; }\n.fid-box strong { color:#F1EAD6; font-size:14px; }\n.fid-ganhou { border-color:#D9D9D9; background:rgba(217, 217, 217,0.08); }\n.fid-ganhou strong { color:#D9D9D9; }\n.fid-pontos { display:flex; gap:6px; }\n.fid-pontos i { width:18px; height:18px; border-radius:50%; border:1px solid #4A4A4A; display:inline-block; }\n.fid-pontos i.on { background:#D9D9D9; border-color:#D9D9D9; }\n.agd-sinal { font-family:'Roboto',sans-serif; font-size:12px; color:#ACACAC; margin-top:4px; }\n.agd-acoes { display:flex; gap:8px; flex-wrap:wrap; }\n.btn-remarcar { background:transparent; border:1px solid #4A4A4A; color:#F1EAD6; border-radius:6px; padding:8px 14px; cursor:pointer; font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:1px; text-transform:uppercase; }\n.btn-remarcar:active { background:rgba(217, 217, 217,0.15); }\n.nota-prazo { font-family:'Roboto',sans-serif; font-size:12px; color:#8E8E8E; margin:12px 0 0; line-height:1.5; }\n.sinal-ok { display:flex; gap:8px; align-items:flex-start; margin-top:14px; font-family:'Roboto',sans-serif; font-size:13px; color:#F1EAD6; text-align:left; cursor:pointer; }\n.sinal-ok input { margin-top:3px; accent-color:#D9D9D9; }\n#success-sinal { font-family:'Roboto',sans-serif; font-size:13px; color:#D9D9D9; margin-top:8px; }\n.remarcar-banner { display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; background:rgba(217, 217, 217,0.08); border:1px solid #D9D9D9; border-radius:8px; padding:12px 14px; margin:0 0 18px; font-family:'Roboto',sans-serif; font-size:13px; color:#F1EAD6; }\n.remarcar-banner div { display:flex; flex-direction:column; gap:2px; }\n.remarcar-banner span { color:#ACACAC; }\n.remarcar-banner button { background:transparent; border:1px solid #4A4A4A; color:#ACACAC; border-radius:6px; padding:8px 14px; cursor:pointer; font-size:12px; }\n.ad-section { text-align:center; }\n.ad-intro { font-family:'Roboto',sans-serif; color:#ACACAC; font-size:14px; margin:-8px 0 22px; }\n.ad-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; max-width:980px; margin:0 auto; }\n.ad-card { margin:0; }\n.ad-comp { position:relative; aspect-ratio:4/5; border-radius:10px; overflow:hidden; border:1px solid #303030; background:#181818; user-select:none; touch-action:pan-y; }\n.ad-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }\n.ad-antes { clip-path:inset(0 calc(100% - var(--pos)) 0 0); }\n.ad-linha { position:absolute; top:0; bottom:0; left:var(--pos); width:2px; background:#D9D9D9; transform:translateX(-1px); pointer-events:none; }\n.ad-linha::after { content:''; position:absolute; top:50%; left:50%; width:30px; height:30px; margin:-15px 0 0 -15px; border-radius:50%; background:#D9D9D9; box-shadow:0 0 0 3px rgba(11, 11, 11,0.6); }\n.ad-tag { position:absolute; top:10px; padding:4px 10px; border-radius:4px; background:rgba(11, 11, 11,0.75); color:#F1EAD6; font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; pointer-events:none; }\n.ad-tag-a { left:10px; } .ad-tag-d { right:10px; }\n.ad-range { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:ew-resize; margin:0; }\n.ad-card figcaption { font-family:'Roboto',sans-serif; font-size:13px; color:#ACACAC; margin-top:8px; }\n.aval-section { text-align:center; }\n.aval-box { max-width:520px; margin:0 auto; background:#181818; border:1px solid #303030; border-radius:12px; padding:28px 22px; }\n.aval-box h3 { margin:0 0 8px; color:#F1EAD6; }\n.aval-box p { margin:0 0 18px; color:#ACACAC; font-family:'Roboto',sans-serif; font-size:14px; line-height:1.6; }\n.aval-btn { display:inline-block; background:#D9D9D9; color:#0B0B0B; padding:12px 26px; border-radius:6px; text-decoration:none; font-family:'Oswald',sans-serif; letter-spacing:2px; text-transform:uppercase; font-size:13px; }\n@media (max-width: 600px) { .agd-acoes { width:100%; } .agd-acoes button { flex:1; } }";
+    document.head.appendChild(st);
+  }
+  function antes(idAlvo, html) {
+    const alvo = document.getElementById(idAlvo); if (!alvo) return;
+    const t = document.createElement('div'); t.innerHTML = html.trim();
+    alvo.parentNode.insertBefore(t.firstElementChild, alvo);
+  }
+  if (!document.getElementById('antes-depois')) antes('planos', "<section id=\"antes-depois\" class=\"section ad-section\" style=\"display:none\"><div class=\"section-header\"><span class=\"section-tag\">ANTES E</span><h2>Depois</h2><div class=\"section-line\"></div></div><p class=\"ad-intro\">Arraste a barra para ver a transformação.</p><div class=\"ad-grid\" id=\"ad-grid\"></div></section>");
+  if (!document.getElementById('avaliacoes')) antes('login-modal', "<section id=\"avaliacoes\" class=\"section aval-section\" style=\"display:none\"><div class=\"aval-box\"><h3>Gostou do atendimento?</h3><p>Sua avaliação ajuda outras pessoas a nos encontrar. Leva menos de um minuto.</p><a id=\"aval-link\" class=\"aval-btn\" href=\"#\" target=\"_blank\" rel=\"noopener\">Avaliar o salão</a></div></section>");
+  if (!document.getElementById('success-sinal')) {
+    const box = document.getElementById('success-pix-box');
+    if (box) { const p = document.createElement('p'); p.id = 'success-sinal'; p.style.display = 'none'; box.parentNode.insertBefore(p, box.nextSibling); }
+  }
+})();
+
 // ================================================
 //  App Principal (Cliente) — os dados da barbearia ficam no config.js
 // ================================================
@@ -391,8 +413,128 @@ function limitePlanoAtingido() {
 function servicoCoberto(service) {
   return !!service && planoAtivo(currentUser) && PLAN_COVERAGE[currentUser.plano].includes(service.id) && !limitePlanoAtingido();
 }
+// ── Fidelidade: a cada N atendimentos pagos, o próximo tem desconto ──
+function fidelDisponivel() {
+  const p = BARBEARIA.politicas || {};
+  return !!(p.fidelAtivo && currentUser && currentUser.fid && currentUser.fid.disponiveis > 0);
+}
+// Aniversário: desconto automático no mês do aniversário, uma vez por ano
+function aniversarioDisponivel() {
+  const p = BARBEARIA.politicas || {};
+  const pct = Number(p.aniversarioDescPct) || 0;
+  if (!currentUser || pct <= 0 || !currentUser.nascimento) return false;
+  const mes = parseInt(String(currentUser.nascimento).split('-')[1], 10);
+  if (!mes || mes !== new Date().getMonth() + 1) return false;
+  return currentUser.anivUsadoAno !== new Date().getFullYear();
+}
+// Devolve o melhor desconto que vale agora (não soma fidelidade com aniversário)
+function descontoAtual() {
+  const p = BARBEARIA.politicas || {};
+  const f = fidelDisponivel() ? Math.min(100, Math.max(0, Number(p.fidelDescPct) || 0)) : 0;
+  const n = aniversarioDisponivel() ? Math.min(100, Math.max(0, Number(p.aniversarioDescPct) || 0)) : 0;
+  if (f <= 0 && n <= 0) return null;
+  return n > f ? { pct: n, tipo: 'aniversario' } : { pct: f, tipo: 'fidelidade' };
+}
 function precoCobrado(service) {
-  return servicoCoberto(service) ? 0 : Number(service.price);
+  if (servicoCoberto(service)) return 0;
+  const base = Number(service.price);
+  const d = descontoAtual();
+  if (!d) return base;
+  return Math.round(base * (100 - d.pct)) / 100;
+}
+function descontoFidelidade(service) {
+  return servicoCoberto(service) ? 0 : Math.max(0, Math.round((Number(service.price) - precoCobrado(service)) * 100) / 100);
+}
+// Conta os atendimentos pagos e concluídos do cliente e quantos descontos ele já ganhou/usou
+async function refreshFidelidade() {
+  const p = BARBEARIA.politicas || {};
+  if (!currentUser || DEMO_MODE) return;
+  if (!p.fidelAtivo && !(Number(p.aniversarioDescPct) > 0)) { currentUser.fid = null; return; }
+  try {
+    const snap = await comTimeout(firebase.firestore().collection('agendamentos')
+      .where('telefone', '==', phoneKey(currentUser.telefone || ''))
+      .where('status', 'in', ['agendado', 'confirmado', 'concluido'])
+      .get());
+    let contados = 0, usados = 0, anivAno = null;
+    snap.docs.forEach(d => {
+      const ag = d.data();
+      if (ag.aniversario) anivAno = Math.max(anivAno || 0, Number(ag.aniversario) || 0);
+      if (ag.fidelidade) { usados++; return; }
+      if (ag.status === 'concluido' && Number(ag.preco) > 0) contados++;
+    });
+    const cada = Math.max(2, parseInt(p.fidelCada, 10) || 5);
+    const ganhos = Math.floor(contados / cada);
+    currentUser.fid = p.fidelAtivo ? { contados, cada, usados, disponiveis: Math.max(0, ganhos - usados), noCiclo: contados % cada } : null;
+    currentUser.anivUsadoAno = anivAno;
+    saveSession(currentUser);
+  } catch (e) { console.warn('Fidelidade:', e); currentUser.fid = null; }
+}
+function htmlFidelidade() {
+  const p = BARBEARIA.politicas || {};
+  const f = currentUser && currentUser.fid;
+  if (aniversarioDisponivel()) {
+    return `<div class="fid-box fid-ganhou"><strong>Feliz aniversário! ${p.aniversarioDescPct}% de desconto</strong><span>Vale no seu próximo atendimento pago este mês, aplicado na hora de agendar.</span></div>` + ((p.fidelAtivo && f) ? '' : '');
+  }
+  if (!p.fidelAtivo || !f) return '';
+  if (f.disponiveis > 0) {
+    return `<div class="fid-box fid-ganhou"><strong>Você tem ${p.fidelDescPct}% de desconto!</strong><span>Vale no seu próximo atendimento pago, aplicado na hora de agendar.</span></div>`;
+  }
+  const pontos = Array.from({ length: f.cada }, (_, i) => `<i class="${i < f.noCiclo ? 'on' : ''}"></i>`).join('');
+  return `<div class="fid-box"><strong>Programa de fidelidade</strong><div class="fid-pontos">${pontos}</div><span>${f.noCiclo} de ${f.cada} atendimentos. Faltam ${f.cada - f.noCiclo} para ganhar ${p.fidelDescPct}% de desconto.</span></div>`;
+}
+
+// ── Sinal via Pix ──
+function pixDoSinal() {
+  return FORMAS_PAGAMENTO.find(f => f && f.tipo === 'pix' && f.ativo !== false && (f.pixQr || f.pixChave)) || null;
+}
+function sinalDoServico(service) {
+  const p = BARBEARIA.politicas || {};
+  const preco = precoCobrado(service);
+  if (!p.sinalAtivo || preco <= 0 || !pixDoSinal()) return 0;
+  if (preco < (Number(p.sinalMinPreco) || 0)) return 0;
+  const total = Number(p.sinalTotalAcima) || 0;
+  if (total > 0 && preco >= total) return preco;                       // serviço caro: pagamento total antecipado
+  const pct = Math.min(100, Math.max(1, Number(p.sinalPct) || 30));
+  return Math.round(preco * pct) / 100;
+}
+
+// ── Prazo para cancelar e remarcar ──
+function prazoEmHoras() { return Number((BARBEARIA.politicas || {}).cancelHoras) || 0; }
+function horasAteAgendamento(data, horario) {
+  const [y, m, d] = String(data).split('-').map(Number);
+  const [hh, mm] = String(horario || '00:00').split(':').map(Number);
+  return (new Date(y, m - 1, d, hh || 0, mm || 0) - new Date()) / 3600000;
+}
+function foraDoPrazo(data, horario) {
+  const h = prazoEmHoras();
+  return h > 0 && horasAteAgendamento(data, horario) < h;
+}
+function avisarForaDoPrazo(acao, servico, data, horario) {
+  const h = prazoEmHoras();
+  if (confirm(`Não dá para ${acao} pelo site: o prazo é de ${h}h de antecedência e falta menos que isso.\n\nQuer falar com o salão pelo WhatsApp?`)) {
+    const msg = encodeURIComponent(`Olá! Preciso ${acao} meu agendamento (${servico}, ${formatDate(data)} às ${horario}), mas estou fora do prazo. Podem me ajudar?`);
+    window.open(`https://wa.me/${WHATSAPP_NOTIFY}?text=${msg}`, '_blank');
+  }
+}
+function notaPrazo() {
+  const h = prazoEmHoras();
+  if (h <= 0) return '';
+  const sinal = (BARBEARIA.politicas || {}).sinalAtivo && pixDoSinal();
+  return `<p class="nota-prazo">Cancelar ou remarcar pelo site: até ${h}h antes do horário${sinal ? '. Fora desse prazo, o sinal não é devolvido' : ''}.</p>`;
+}
+function extraConfirmHTML(sel) {
+  const R = v => 'R$' + Number(v).toFixed(2).replace('.', ',');
+  const p = BARBEARIA.politicas || {};
+  let h = '';
+  const dsc = descontoAtual();
+  if (dsc && descontoFidelidade(sel) > 0) h += `<div class="confirm-row"><label>${dsc.tipo === 'aniversario' ? 'Aniversário' : 'Fidelidade'}</label><span style="font-size:13px;">${dsc.pct}% de desconto: -${R(descontoFidelidade(sel))}</span></div>`;
+  const sinal = sinalDoServico(sel);
+  if (sinal > 0) {
+    const resto = Math.round((precoCobrado(sel) - sinal) * 100) / 100;
+    h += `<div class="confirm-row"><label>Sinal agora (Pix)</label><span>${R(sinal)}</span></div>`;
+    if (resto > 0) h += `<div class="confirm-row"><label>Restante no atendimento</label><span>${R(resto)}</span></div>`;
+  }
+  return h + notaPrazo();
 }
 // Relê o plano do cliente no Firestore (o dono pode ter alterado depois do login)
 async function refreshPlano() {
@@ -407,6 +549,7 @@ async function refreshPlano() {
       saveSession(currentUser);
     }
   } catch (e) { console.warn('Plano:', e); }
+  await refreshFidelidade();
   renderServiceOptions();
 }
 
@@ -625,6 +768,10 @@ window.openMyBookings = async function() {
   const list  = document.getElementById('mybookings-list');
   modal.classList.add('open');
   list.innerHTML = '<p class="mybookings-loading">Carregando...</p>';
+  let fidEl = document.getElementById('mybookings-fid');
+  if (!fidEl) { fidEl = document.createElement('div'); fidEl.id = 'mybookings-fid'; list.parentNode.insertBefore(fidEl, list); }
+  fidEl.innerHTML = htmlFidelidade();
+  refreshFidelidade().then(() => { fidEl.innerHTML = htmlFidelidade(); });
 
   try {
     const key = currentUser.telefone;
@@ -654,6 +801,7 @@ window.openMyBookings = async function() {
 
     list.innerHTML = docs.map(d => {
       const a = d.data();
+      _meusAgd[d.id] = a;
       const statusLabel = a.status === 'confirmado'
         ? '<span class="agd-status confirmado">Confirmado</span>'
         : '<span class="agd-status agendado">Agendado</span>';
@@ -664,12 +812,16 @@ window.openMyBookings = async function() {
             <div class="agd-detalhe">${formatDate(a.data)} · ${a.horario}</div>
             <div class="agd-preco"${Number(a.preco) === 0 ? ' style="font-size:14px;"' : ''}>${Number(a.preco) === 0 ? 'Incluso no plano' : 'R$' + Number(a.preco).toFixed(2).replace('.',',')}</div>
             ${statusLabel}
+            ${Number(a.sinal) > 0 ? `<div class="agd-sinal">Sinal R$${Number(a.sinal).toFixed(2).replace('.', ',')}: ${a.sinalPago ? 'recebido' : 'aguardando confirmação'}</div>` : ''}
           </div>
-          <button class="btn-cancelar" onclick="cancelarAgendamento('${d.id}', '${a.servico}', '${a.data}', '${a.horario}')">
-            Cancelar
-          </button>
+          <div class="agd-acoes">
+            <button class="btn-remarcar" onclick="remarcarAgendamento('${d.id}')">Remarcar</button>
+            <button class="btn-cancelar" onclick="cancelarAgendamento('${d.id}', '${a.servico}', '${a.data}', '${a.horario}')">
+              Cancelar
+            </button>
+          </div>
         </div>`;
-    }).join('');
+    }).join('') + notaPrazo();
   } catch (e) {
     list.innerHTML = '<p class="mybookings-empty">Erro ao carregar. Tente novamente.</p>';
   }
@@ -680,6 +832,7 @@ window.closeMyBookings = function() {
 };
 
 window.cancelarAgendamento = async function(id, servico, data, horario) {
+  if (foraDoPrazo(data, horario)) { avisarForaDoPrazo('cancelar', servico, data, horario); return; }
   const confirma = confirm(`Cancelar ${servico} em ${formatDate(data)} às ${horario}?`);
   if (!confirma) return;
 
@@ -817,7 +970,9 @@ function renderServiceOptions() {
     const coberto = servicoCoberto(s);
     const preco = coberto
       ? '<span class="option-price" style="font-family:Oswald,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;">Incluso no plano</span>'
-      : `<span class="option-price">R$${s.price.toFixed(2).replace('.', ',')}</span>`;
+      : (descontoAtual()
+          ? `<span class="option-price"><s class="preco-antigo">R$${s.price.toFixed(2).replace('.', ',')}</s> R$${precoCobrado(s).toFixed(2).replace('.', ',')}</span>`
+          : `<span class="option-price">R$${s.price.toFixed(2).replace('.', ',')}</span>`);
     return `
     <div class="option-item" id="opt-${s.id}" onclick="selectService('${s.id}')">
       <span>${s.name}</span>
@@ -926,6 +1081,7 @@ async function carregarSlotsParaData(dataSelecionada) {
     agendSnap.docs.forEach(d => {
       const ag = d.data();
       if (!ag.horario) return;
+      if (state && state.remarcando && d.id === state.remarcando.id) return;   // remarcando: o horário antigo fica livre
       const ini = horaParaMin(ag.horario);
       ocupados.push([ini, ini + duracaoServico(ag.servicoId || ag.servico)]);
     });
@@ -1118,6 +1274,7 @@ window.selectService = function(id) {
 // Esconde a forma de pagamento quando o serviço é (ou parece ser, antes de saber a data) coberto pelo plano do cliente
 function atualizarVisibilidadePagamento() {
   const grupo = document.getElementById('pagamento-form-group');
+  if (grupo && state.remarcando) { grupo.style.display = 'none'; return; }
   if (!grupo || !state.selected) return;
   const coberto = servicoCoberto(state.selected);
   grupo.style.display = coberto ? 'none' : '';
@@ -1143,6 +1300,7 @@ window.goToConfirm = async function() {
   }
   state.name = name; state.phone = phone; state.date = date; state.time = time;
   state.obs = document.getElementById('obs').value.trim();
+  if (state.remarcando) { renderConfirmRemarcacao(); showStep(3); return; }
   state.planoUso = await checarUsoPlano(date); // limite de uso do plano (ex.: Simples = 2x no mês)
   atualizarVisibilidadePagamento(); // agora já dá pra saber com certeza se o serviço será cobrado ou não
   if (!servicoCoberto(state.selected) && !state.formaPagamento) {
@@ -1160,6 +1318,7 @@ function formatDate(d) {
 
 function renderConfirm() {
   const sel = state.selected;
+  const btnOk = document.querySelector('.btn-confirm'); if (btnOk) btnOk.textContent = '✓ Confirmar';
   document.getElementById('confirm-summary').innerHTML = `
     <div class="confirm-row"><label>Serviço</label><span>${sel.name}</span></div>
     <div class="confirm-row"><label>Cliente</label><span>${state.name}</span></div>
@@ -1173,11 +1332,16 @@ function renderConfirm() {
     <div class="confirm-row confirm-total"><label>Valor</label>
       ${servicoCoberto(sel)
         ? `<span style="font-size:16px;">Incluso no plano ${nomeDoPlano(currentUser.plano)}</span>`
-        : `<span>R$${Number(sel.price).toFixed(2).replace('.', ',')}</span>`}
-    </div>`;
+        : `<span>${descontoFidelidade(sel) > 0 ? '<s class="preco-antigo">R$' + Number(sel.price).toFixed(2).replace('.', ',') + '</s> ' : ''}R$${precoCobrado(sel).toFixed(2).replace('.', ',')}</span>`}
+    </div>
+    ${extraConfirmHTML(sel)}`;
   const pixConfirm = document.getElementById('confirm-pix-box');
-  if (!servicoCoberto(sel) && state.formaPagamento) {
-    exibirBoxPix(pixConfirm, formaPagamentoPorId(state.formaPagamento), Number(sel.price), 'confirm');
+  state.sinal = sinalDoServico(sel);
+  if (state.sinal > 0) {
+    exibirBoxPix(pixConfirm, pixDoSinal(), state.sinal, 'confirm');
+    pixConfirm.insertAdjacentHTML('beforeend', '<label class="sinal-ok"><input type="checkbox" id="sinal-ok"> Já fiz o Pix do sinal e vou enviar o comprovante pelo WhatsApp</label>');
+  } else if (!servicoCoberto(sel) && state.formaPagamento) {
+    exibirBoxPix(pixConfirm, formaPagamentoPorId(state.formaPagamento), precoCobrado(sel), 'confirm');
   } else if (pixConfirm) {
     pixConfirm.style.display = 'none';
     pixConfirm.innerHTML = '';
@@ -1195,8 +1359,10 @@ function sendWhatsAppNotification() {
     '*Horario:* ' + state.time,
     servicoCoberto(sel)
       ? '*Valor:* Incluso no plano ' + nomeDoPlano(currentUser.plano) + ' (sem cobrança)'
-      : '*Valor:* R$' + Number(sel.price).toFixed(2).replace('.', ','),
+      : '*Valor:* R$' + precoCobrado(sel).toFixed(2).replace('.', ','),
   ];
+  if (descontoFidelidade(sel) > 0 && descontoAtual()) lines.push('*' + (descontoAtual().tipo === 'aniversario' ? 'Aniversário' : 'Fidelidade') + ':* desconto de ' + descontoAtual().pct + '% aplicado');
+  if (Number(state.sinal) > 0) lines.push('*Sinal (Pix):* R$' + Number(state.sinal).toFixed(2).replace('.', ',') + ' - o cliente vai enviar o comprovante');
   if (!servicoCoberto(sel) && state.formaPagamento) {
     const forma = formaPagamentoPorId(state.formaPagamento);
     if (forma) lines.push('*Pagamento:* ' + forma.nome);
@@ -1223,7 +1389,12 @@ function sendClientConfirmation() {
 }
 
 window.submitBooking = async function() {
+  if (state.remarcando) return efetivarRemarcacao();
   if (window._submitting) return;
+  if (!DEMO_MODE && Number(state.sinal) > 0) {
+    const ok = document.getElementById('sinal-ok');
+    if (!ok || !ok.checked) { alert('Faça o Pix do sinal e marque a confirmação para concluir o agendamento.'); return; }
+  }
   window._submitting = true;
   const btn = document.querySelector('.btn-confirm');
   btn.textContent = 'Enviando...'; btn.disabled = true;
@@ -1242,19 +1413,34 @@ window.submitBooking = async function() {
             ? 'Limite do plano atingido - cobrar' + (state.obs ? ' | ' + state.obs : '')
             : state.obs);
       const formaSelecionada = !coberto ? formaPagamentoPorId(state.formaPagamento) : null;
-      await firebase.firestore().collection('agendamentos').add({
+      state.sinal = sinalDoServico(state.selected);
+      const novo = {
         tipo: 'servico', servico: state.selected.name, preco: precoCobrado(state.selected),
         cliente: state.name, telefone: key,
         data: state.date, horario: state.time, obs: obsFinal,
         formaPagamento: formaSelecionada ? formaSelecionada.nome : 'Incluso no plano',
         status: 'agendado',
-          criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-      });
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      if (state.sinal > 0) { novo.sinal = state.sinal; novo.sinalPago = false; }
+      const dscAtual = descontoAtual();
+      if (dscAtual && descontoFidelidade(state.selected) > 0) {
+        if (dscAtual.tipo === 'aniversario') novo.aniversario = new Date().getFullYear(); else novo.fidelidade = true;
+        novo.precoOriginal = Number(state.selected.price);
+      }
+      await firebase.firestore().collection('agendamentos').add(novo);
+      if (novo.aniversario && currentUser) { currentUser.anivUsadoAno = novo.aniversario; saveSession(currentUser); }
       sendWhatsAppNotification();
       // (confirmação para o cliente desativada: o agendamento vai só para o WhatsApp da barbearia)
     }
     const pixSucesso = document.getElementById('success-pix-box');
-    exibirBoxPix(pixSucesso, formaPagamentoPorId(state.formaPagamento), precoCobrado(state.selected), 'sucesso');
+    const temSinal = Number(state.sinal) > 0;
+    exibirBoxPix(pixSucesso, temSinal ? pixDoSinal() : formaPagamentoPorId(state.formaPagamento), temSinal ? state.sinal : precoCobrado(state.selected), 'sucesso');
+    const msgSinal = document.getElementById('success-sinal');
+    if (msgSinal) {
+      msgSinal.style.display = temSinal ? '' : 'none';
+      msgSinal.textContent = temSinal ? 'Para garantir o horário, envie o comprovante do sinal (R$' + Number(state.sinal).toFixed(2).replace('.', ',') + ') pelo WhatsApp.' : '';
+    }
     document.getElementById('success-modal').classList.add('open');
     state = { selected: null, name: '', phone: '', date: '', time: '', obs: '', formaPagamento: null };
     window.state = state;
@@ -1269,6 +1455,7 @@ window.submitBooking = async function() {
     renderServiceOptions();
     showStep(1);
     preencherDadosAgendamento();
+    refreshPlano();   // atualiza o programa de fidelidade com o agendamento que acabou de ser feito
   } catch (err) {
     console.error(err);
     alert('Erro ao enviar. Verifique a conexão e tente novamente.');
@@ -1298,6 +1485,7 @@ function aplicarAjustesNoSite() {
   renderPlans();
   aplicarVisibilidadePlanos();
   aplicarMarca();
+  aplicarAvaliacaoCTA();
   try { if (currentUser) refreshPlano(); } catch (e) {}
 }
 
@@ -1310,6 +1498,9 @@ document.addEventListener('DOMContentLoaded', () => {
   carregarFormasPagamento(); // formas de pagamento (Pix, dinheiro, cartão...) salvas no painel admin
   carregarAjustesRemotos().then(mudou => { if (mudou) aplicarAjustesNoSite(); }); // nome, logo, WhatsApp e planos do painel
   carregarGaleria(); // carrega as fotos do painel admin e monta o slideshow (esconde a seção se não houver fotos)
+
+  carregarAntesDepois();   // seção "Antes e depois" (some se o dono não cadastrou fotos)
+  aplicarAvaliacaoCTA();   // botão de avaliação (só aparece se o dono cadastrou o link)
 
   // Sessão
   currentUser = loadSession();
@@ -1341,3 +1532,136 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+
+// ══════════════════════════════════════════════════
+//  REMARCAR AGENDAMENTO
+//  O cliente escolhe outro dia e horário; o mesmo agendamento é atualizado (não vira um novo).
+//  Volta para "agendado" para o dono confirmar de novo.
+// ══════════════════════════════════════════════════
+const _meusAgd = {};
+
+window.remarcarAgendamento = function(id) {
+  const ag = _meusAgd[id];
+  if (!ag) return;
+  if (foraDoPrazo(ag.data, ag.horario)) { avisarForaDoPrazo('remarcar', ag.servico, ag.data, ag.horario); return; }
+  const s = SERVICES.find(x => x.name === ag.servico);
+  if (!s) { alert('Não achei esse serviço na lista atual. Fale com o salão pelo WhatsApp para remarcar.'); return; }
+  state.remarcando = { id, servico: ag.servico, data: ag.data, horario: ag.horario };
+  state.selected = s; state.date = ''; state.time = ''; state.formaPagamento = null;
+  closeMyBookings();
+  showStep(2);
+  preencherDadosAgendamento();
+  const prefDate = document.getElementById('pref-date'); if (prefDate) prefDate.value = '';
+  const prefTime = document.getElementById('pref-time');
+  if (prefTime) { prefTime.innerHTML = '<option value="">Selecione uma data primeiro</option>'; prefTime.disabled = true; }
+  mostrarBannerRemarcacao();
+  atualizarVisibilidadePagamento();
+  const now = new Date();
+  if (!calAno) { calAno = now.getFullYear(); calMes = now.getMonth(); }
+  carregarConfigCalendario().then(() => renderCalendario());
+  const sec = document.getElementById('agendar'); if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+};
+
+function mostrarBannerRemarcacao() {
+  const r = state.remarcando; if (!r) return;
+  let b = document.getElementById('remarcar-banner');
+  if (!b) {
+    b = document.createElement('div'); b.id = 'remarcar-banner'; b.className = 'remarcar-banner';
+    const s2 = document.getElementById('step-2'); s2.insertBefore(b, s2.firstChild);
+  }
+  b.innerHTML = `<div><strong>Remarcando: ${r.servico}</strong><span>Horário atual: ${formatDate(r.data)} às ${r.horario}. Escolha o novo dia e horário.</span></div><button type="button" onclick="cancelarRemarcacao()">Desistir</button>`;
+  b.style.display = '';
+}
+
+window.cancelarRemarcacao = function() {
+  state.remarcando = null; state.selected = null; state.date = ''; state.time = '';
+  const b = document.getElementById('remarcar-banner'); if (b) b.style.display = 'none';
+  const g = document.getElementById('pagamento-form-group'); if (g) g.style.display = '';
+  const bc = document.querySelector('.btn-confirm'); if (bc) bc.textContent = '✓ Confirmar';
+  showStep(1);
+};
+
+function renderConfirmRemarcacao() {
+  const r = state.remarcando;
+  document.getElementById('confirm-summary').innerHTML = `
+    <div class="confirm-row"><label>Serviço</label><span>${r.servico}</span></div>
+    <div class="confirm-row"><label>Horário atual</label><span>${formatDate(r.data)} às ${r.horario}</span></div>
+    <div class="confirm-row confirm-total"><label>Novo horário</label><span>${formatDate(state.date)} às ${state.time}</span></div>
+    <p class="nota-prazo">Depois de remarcar, o salão confirma o novo horário com você.</p>`;
+  const px = document.getElementById('confirm-pix-box'); if (px) { px.style.display = 'none'; px.innerHTML = ''; }
+  const bc = document.querySelector('.btn-confirm'); if (bc) bc.textContent = '✓ Confirmar remarcação';
+}
+
+async function efetivarRemarcacao() {
+  if (window._submitting) return;
+  window._submitting = true;
+  const btn = document.querySelector('.btn-confirm');
+  btn.textContent = 'Remarcando...'; btn.disabled = true;
+  const r = state.remarcando;
+  try {
+    if (!DEMO_MODE) {
+      await firebase.firestore().collection('agendamentos').doc(r.id).update({
+        data: state.date, horario: state.time, status: 'agendado',
+        remarcadoEm: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      const msg = encodeURIComponent(
+        `*Remarcação*\n\n*Cliente:* ${currentUser ? currentUser.nome : state.name}\n*Serviço:* ${r.servico}\n*De:* ${formatDate(r.data)} às ${r.horario}\n*Para:* ${formatDate(state.date)} às ${state.time}`
+      );
+      window.open(`https://wa.me/${WHATSAPP_NOTIFY}?text=${msg}`, '_blank');
+    }
+    showToast('Agendamento remarcado.');
+    state = { selected: null, name: '', phone: '', date: '', time: '', obs: '', formaPagamento: null };
+    window.state = state;
+    const b = document.getElementById('remarcar-banner'); if (b) b.style.display = 'none';
+    const g = document.getElementById('pagamento-form-group'); if (g) g.style.display = '';
+    const _now = new Date(); calAno = _now.getFullYear(); calMes = _now.getMonth();
+    ['pref-date', 'obs'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    const calWrap = document.getElementById('cal-wrap'); if (calWrap) calWrap.innerHTML = '';
+    showStep(1);
+    preencherDadosAgendamento();
+    openMyBookings();
+  } catch (e) {
+    console.error(e);
+    alert('Não consegui remarcar. Confira o horário e tente de novo.');
+  } finally {
+    btn.textContent = '✓ Confirmar'; btn.disabled = false;
+    window._submitting = false;
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  ANTES E DEPOIS + AVALIAÇÃO
+// ══════════════════════════════════════════════════
+function adEsc(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+async function carregarAntesDepois() {
+  const sec = document.getElementById('antes-depois'), grid = document.getElementById('ad-grid');
+  if (!sec || !grid || DEMO_MODE) return;
+  try {
+    const snap = await firebase.firestore().collection('antesdepois').get();
+    const itens = snap.docs.map(d => d.data()).filter(x => x && x.antes && x.depois)
+      .sort((x, y) => ((y.criadoEm && y.criadoEm.seconds) || 0) - ((x.criadoEm && x.criadoEm.seconds) || 0)).slice(0, 8);
+    if (!itens.length) { sec.style.display = 'none'; return; }
+    grid.innerHTML = itens.map(it => `
+      <figure class="ad-card">
+        <div class="ad-comp" style="--pos:50%">
+          <img class="ad-img" src="${it.depois}" alt="Depois" loading="lazy">
+          <img class="ad-img ad-antes" src="${it.antes}" alt="Antes" loading="lazy">
+          <span class="ad-tag ad-tag-a">Antes</span><span class="ad-tag ad-tag-d">Depois</span>
+          <div class="ad-linha"></div>
+          <input class="ad-range" type="range" min="0" max="100" value="50" aria-label="Arraste para comparar antes e depois"
+            oninput="this.parentNode.style.setProperty('--pos', this.value + '%')">
+        </div>
+        ${it.legenda ? `<figcaption>${adEsc(it.legenda)}</figcaption>` : ''}
+      </figure>`).join('');
+    sec.style.display = '';
+  } catch (e) { console.warn('Antes e depois:', e); }
+}
+
+function aplicarAvaliacaoCTA() {
+  const sec = document.getElementById('avaliacoes'), a = document.getElementById('aval-link');
+  if (!sec || !a) return;
+  const link = String((BARBEARIA.politicas || {}).avalLink || '').trim();
+  if (/^https?:\/\//i.test(link)) { a.href = link; sec.style.display = ''; } else { sec.style.display = 'none'; }
+}
