@@ -892,6 +892,7 @@ async function carregarFormasPagamento() {
   if (document.getElementById('tab-servicos') && document.getElementById('tab-servicos').classList.contains('active')) {
     _pagamentoEdit = JSON.parse(JSON.stringify(FORMAS_PAGAMENTO));
     renderFormasPagamentoEditor();
+    try { atualizarAvisoSinal(); } catch (e) {}
   }
 }
 
@@ -1117,12 +1118,13 @@ function showTab(tab, el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   if (el) el.classList.add('active');
-  const titles = { dashboard: 'Dashboard', agendamentos: 'Agendamentos', horarios: 'Horarios de Atendimento', servicos: 'Ajustes', datas: 'Datas Especiais', clientes: 'Clientes' };
+  const titles = { dashboard: 'Dashboard', agendamentos: 'Agendamentos', horarios: 'Horarios de Atendimento', servicos: 'Ajustes', datas: 'Datas Especiais', clientes: 'Clientes', relacionamento: 'Relacionamento' };
   document.getElementById('page-title').textContent = titles[tab] || tab;
   if (tab === 'horarios') carregarHorarios();
-  if (tab === 'servicos') { _servicosEdit = JSON.parse(JSON.stringify(SERVICES)); renderServicosEditor(); _pagamentoEdit = JSON.parse(JSON.stringify(FORMAS_PAGAMENTO)); renderFormasPagamentoEditor(); _galeriaEdit = JSON.parse(JSON.stringify(GALERIA_FOTOS)); renderGaleriaEditor(); renderAjustes(); }
+  if (tab === 'servicos') { _servicosEdit = JSON.parse(JSON.stringify(SERVICES)); renderServicosEditor(); _pagamentoEdit = JSON.parse(JSON.stringify(FORMAS_PAGAMENTO)); renderFormasPagamentoEditor(); _galeriaEdit = JSON.parse(JSON.stringify(GALERIA_FOTOS)); renderGaleriaEditor(); renderAjustes(); renderPoliticasEditor(); carregarAntesDepoisAdmin(); }
   if (tab === 'datas') carregarDatasEspeciais();
   if (tab === 'clientes') renderClientes();
+  if (tab === 'relacionamento') renderRelacionamento();
   gerenciarFab(tab);
   // Scroll para o topo no mobile
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1488,13 +1490,14 @@ function renderAgendamentosTable(data) {
     <td data-label="Data">${a.data ? formatDate(a.data) : '--'}</td>
     <td data-label="Horário">${a.horario||'--'}</td>
     <td data-label="Pagamento">${a.formaPagamento||'--'}</td>
-    <td data-label="Valor" style="color:var(--gold);font-family:var(--font-display);font-size:18px;">${fmtValorAgd(a)}</td>
+    <td data-label="Valor" style="color:var(--gold);font-family:var(--font-display);font-size:18px;">${fmtValorAgd(a)}${extrasAgdHTML(a)}</td>
     <td data-label="Status">${badgeHTML(a.status)}</td>
     <td>
       <div class="action-btns">
         ${a.status==='agendado' ? `<button class="btn-action btn-confirmar" onclick="updateStatus('${a.id}','confirmado')">Confirmar</button>` : ''}
         ${a.status==='confirmado' ? `<button class="btn-action btn-concluir" onclick="updateStatus('${a.id}','concluido')">Concluir</button>` : ''}
         ${['agendado','confirmado'].includes(a.status) ? `<button class="btn-action btn-cancelar" onclick="updateStatus('${a.id}','cancelado')">Cancelar</button>` : ''}
+        ${a.status==='concluido' && (a.telefone||'').replace(/\D/g,'') ? `<button class="btn-action btn-whats" onclick="relPedirAvaliacao('${a.id}')">${a.avaliacaoPedida ? 'Avaliação enviada' : 'Pedir avaliação'}</button>` : ''}
         <a class="btn-action btn-whats" href="https://wa.me/55${(a.telefone||'').replace(/\D/g,'')}" target="_blank">WhatsApp</a>
         <button class="btn-action btn-excluir" onclick="deleteAgendamento('${a.id}')">Excluir</button>
       </div>
@@ -1542,6 +1545,7 @@ function mensagemStatusWpp(ag, status) {
       'Olá, *' + primeiroNome + '*!', '',
       'Muito obrigado por escolher a *' + BARBEARIA.nome + '*! Foi um prazer te atender.', '',
       'Esperamos te ver de novo em breve. Quando quiser agendar o próximo horário, é só chamar!',
+      ...(((BARBEARIA.politicas || {}).avalLink || '').trim() ? ['', 'Se puder, deixe sua avaliação. Ajuda muito: ' + BARBEARIA.politicas.avalLink.trim()] : []),
     ].join('\n');
   }
   return [
@@ -3751,3 +3755,255 @@ document.addEventListener('click', function unlockOnce() {
   document.removeEventListener('click', unlockOnce);
   iniciarPushNotifications();
 });
+
+
+// ══════════════════════════════════════════════════
+//  RELACIONAMENTO: aniversários, clientes que sumiram e pedido de avaliação
+// ══════════════════════════════════════════════════
+function relPol() { return BARBEARIA.politicas || {}; }
+function relPrimeiroNome(n) { return String(n || '').trim().split(/\s+/)[0] || ''; }
+function relEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function relMsg(modelo, c, extra) {
+  extra = extra || {};
+  return String(modelo || '').replace(/\{nome\}/g, relPrimeiroNome(c.nome)).replace(/\{(?:salao|barbearia)\}/g, BARBEARIA.nome)
+    .replace(/\{desconto\}/g, extra.desconto || '').replace(/\{link\}/g, extra.link || '');
+}
+function relLinkWA(tel, msg) {
+  let d = String(tel || '').replace(/\D/g, '');
+  if (d.length <= 11) d = '55' + d;
+  return 'https://wa.me/' + d + '?text=' + encodeURIComponent(msg);
+}
+function relHoje() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function relDias(deISO, ateISO) { return Math.round((new Date(ateISO + 'T12:00:00') - new Date(deISO + 'T12:00:00')) / 86400000); }
+function relFmt(iso) { const [y, m, d] = String(iso).split('-'); return d + '/' + m + '/' + y; }
+
+// Marca quem já recebeu a mensagem (só neste aparelho)
+function relContatos() { try { return JSON.parse(localStorage.getItem('rel_contatos_v1') || '{}'); } catch (e) { return {}; } }
+function relMarcarContato(chave) {
+  const m = relContatos(); m[chave] = relHoje();
+  try { localStorage.setItem('rel_contatos_v1', JSON.stringify(m)); } catch (e) {}
+}
+function relBotaoWA(chave, tel, msg) {
+  const ja = relContatos()[chave];
+  return '<div class="rel-acoes">' + (ja ? '<span class="rel-enviado">Enviado em ' + relFmt(ja).slice(0, 5) + '</span>' : '') +
+    '<a class="rel-btn" target="_blank" rel="noopener" href="' + relEsc(relLinkWA(tel, msg)) + '" onclick="relMarcarContato(\'' + chave + '\'); setTimeout(renderRelacionamento, 400)">' + (ja ? 'Enviar de novo' : 'WhatsApp') + '</a></div>';
+}
+function relClientes() {
+  return Object.values(buildClientMap()).filter(c => String(c.telefone || '').replace(/\D/g, '').length >= 10);
+}
+
+function renderRelacionamento() { renderRelAniversarios(); renderRelAusentes(); renderRelAvaliacoes(); }
+
+function renderRelAniversarios() {
+  const el = document.getElementById('rel-aniv-lista'); if (!el) return;
+  const janela = parseInt((document.getElementById('rel-aniv-janela') || {}).value, 10) || 7;
+  const hoje = new Date(); hoje.setHours(12, 0, 0, 0);
+  const lista = relClientes().map(c => {
+    if (!c.nascimento) return null;
+    const [y, m, d] = c.nascimento.split('-').map(Number);
+    if (!m || !d) return null;
+    let prox = new Date(hoje.getFullYear(), m - 1, d, 12);
+    if (prox < hoje) prox = new Date(hoje.getFullYear() + 1, m - 1, d, 12);
+    const dias = Math.round((prox - hoje) / 86400000);
+    return dias <= janela ? { c, dias, dia: String(d).padStart(2, '0') + '/' + String(m).padStart(2, '0'), idade: y > 1900 ? prox.getFullYear() - y : 0 } : null;
+  }).filter(Boolean).sort((a, b) => a.dias - b.dias);
+  if (!lista.length) { el.innerHTML = '<p class="rel-vazio">Nenhum aniversariante nesse período.</p>'; return; }
+  const pct = Number(relPol().aniversarioDescPct) || 0;
+  el.innerHTML = lista.map(x => {
+    const quando = x.dias === 0 ? '<b>Hoje</b>' : x.dias === 1 ? '<b>Amanhã</b>' : 'Em ' + x.dias + ' dias';
+    const msg = relMsg(relPol().msgAniversario, x.c, { desconto: pct + '%' });
+    return '<div class="rel-item"><div class="rel-quem"><span class="rel-nome">' + relEsc(x.c.nome) + '</span><span class="rel-info">' + quando + ' · ' + x.dia + (x.idade ? ' · ' + x.idade + ' anos' : '') + '</span></div>' +
+      relBotaoWA('aniv:' + x.c.key + ':' + new Date().getFullYear(), x.c.telefone, msg) + '</div>';
+  }).join('');
+}
+
+function renderRelAusentes() {
+  const el = document.getElementById('rel-aus-lista'); if (!el) return;
+  const minimo = parseInt((document.getElementById('rel-aus-dias') || {}).value, 10) || 45;
+  const hoje = relHoje();
+  const lista = relClientes().map(c => {
+    const ags = (c.agendamentos || []).filter(a => a.data && a.status !== 'cancelado');
+    if (ags.some(a => a.data >= hoje && ['agendado', 'confirmado'].includes(a.status))) return null;   // já tem horário marcado
+    const passados = ags.filter(a => a.data <= hoje).map(a => a.data).sort();
+    if (!passados.length) return null;
+    const ultimo = passados[passados.length - 1], dias = relDias(ultimo, hoje);
+    return dias >= minimo ? { c, ultimo, dias, total: passados.length } : null;
+  }).filter(Boolean).sort((a, b) => b.dias - a.dias);
+  if (!lista.length) { el.innerHTML = '<p class="rel-vazio">Nenhum cliente sumido nesse período.</p>'; return; }
+  const LIM = 60;
+  el.innerHTML = lista.slice(0, LIM).map(x =>
+    '<div class="rel-item"><div class="rel-quem"><span class="rel-nome">' + relEsc(x.c.nome) + '</span><span class="rel-info">Último atendimento: ' + relFmt(x.ultimo) + ' · <b>' + x.dias + ' dias</b> · ' + x.total + (x.total === 1 ? ' visita' : ' visitas') + '</span></div>' +
+    relBotaoWA('ret:' + x.c.key, x.c.telefone, relMsg(relPol().msgRetorno, x.c)) + '</div>'
+  ).join('') + (lista.length > LIM ? '<p class="rel-vazio">Mostrando os ' + LIM + ' mais antigos de ' + lista.length + '.</p>' : '');
+}
+
+function renderRelAvaliacoes() {
+  const el = document.getElementById('rel-aval-lista'); if (!el) return;
+  if (!String(relPol().avalLink || '').trim()) { el.innerHTML = '<p class="rel-vazio">Cadastre o link de avaliação em Ajustes para usar o pedido de avaliação.</p>'; return; }
+  const hoje = relHoje();
+  const lista = allAgendamentos.filter(a => a.status === 'concluido' && !a.avaliacaoPedida && (a.telefone || '').replace(/\D/g, '') && a.data && relDias(a.data, hoje) >= 0 && relDias(a.data, hoje) <= 14)
+    .sort((x, y) => y.data.localeCompare(x.data));
+  if (!lista.length) { el.innerHTML = '<p class="rel-vazio">Nenhum pedido pendente.</p>'; return; }
+  el.innerHTML = lista.map(a =>
+    '<div class="rel-item"><div class="rel-quem"><span class="rel-nome">' + relEsc(a.cliente) + '</span><span class="rel-info">' + relEsc(a.servico || '') + ' · ' + relFmt(a.data) + '</span></div>' +
+    '<div class="rel-acoes"><button type="button" class="rel-btn" onclick="relPedirAvaliacao(\'' + a.id + '\')">Pedir avaliação</button></div></div>'
+  ).join('');
+}
+
+async function relPedirAvaliacao(id) {
+  const a = allAgendamentos.find(x => x.id === id); if (!a) return;
+  const link = String(relPol().avalLink || '').trim();
+  if (!link) { showToast('Cadastre o link de avaliação em Ajustes.'); return; }
+  window.open(relLinkWA(a.telefone, relMsg(relPol().msgAvaliacao, { nome: a.cliente }, { link })), '_blank');
+  try { await db.collection('agendamentos').doc(id).update({ avaliacaoPedida: true }); a.avaliacaoPedida = true; }
+  catch (e) { console.warn('Não consegui marcar o pedido de avaliação', e); }
+  renderRelAvaliacoes();
+  try { applyFilters(); } catch (e) {}
+}
+
+// ── Sinal recebido e selos na tabela de agendamentos ──
+function extrasAgdHTML(a) {
+  let h = '';
+  const s = Number(a.sinal) || 0;
+  if (s > 0) {
+    const ok = a.sinalPago === true;
+    h += '<div style="font-size:11px;margin-top:4px;font-family:Roboto,sans-serif;color:' + (ok ? '#4cd984' : '#e0a030') + ';">Sinal R$' + s.toFixed(2).replace('.', ',') + ': ' + (ok ? 'recebido' : 'aguardando') + '</div>';
+    if (!ok && a.status !== 'cancelado') h += '<button type="button" class="btn-action btn-confirmar" style="margin-top:4px;" onclick="marcarSinalPago(\'' + a.id + '\')">Sinal recebido</button>';
+  }
+  if (a.aniversario) h += '<div style="font-size:11px;margin-top:4px;font-family:Roboto,sans-serif;color:#ACACAC;">Desconto de aniversário</div>';
+  if (a.fidelidade) h += '<div style="font-size:11px;margin-top:4px;font-family:Roboto,sans-serif;color:#ACACAC;">Desconto de fidelidade</div>';
+  if (a.remarcadoEm) h += '<div style="font-size:11px;margin-top:4px;font-family:Roboto,sans-serif;color:#ACACAC;">Remarcado pelo cliente</div>';
+  return h;
+}
+async function marcarSinalPago(id) {
+  try {
+    await db.collection('agendamentos').doc(id).update({ sinalPago: true });
+    const a = allAgendamentos.find(x => x.id === id); if (a) a.sinalPago = true;
+    applyFilters();
+    showToast('Sinal marcado como recebido.');
+  } catch (e) { console.warn(e); alert('Não consegui salvar. Tente de novo.'); }
+}
+
+// ── Ajustes: sinal, cancelamento, fidelidade e mensagens ──
+// Avisa quando o sinal está ligado mas não vai aparecer para o cliente (falta a chave Pix)
+function atualizarAvisoSinal() {
+  let el = document.getElementById('aj-sinal-aviso');
+  if (!el) {   // admin.html de versão anterior: cria o aviso no lugar certo
+    const cb0 = document.getElementById('aj-sinal-ativo'); if (!cb0) return;
+    el = document.createElement('div'); el.id = 'aj-sinal-aviso';
+    el.style.cssText = "display:none;background:rgba(224,160,48,0.1);border:1px solid #e0a030;color:#F1EAD6;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-family:'Roboto',sans-serif;font-size:13px;line-height:1.5;";
+    cb0.closest('label').parentNode.insertBefore(el, cb0.closest('label'));
+  }
+  const forms = (typeof _pagamentoEdit !== 'undefined' && _pagamentoEdit && _pagamentoEdit.length) ? _pagamentoEdit : FORMAS_PAGAMENTO;
+  const pix = forms.find(f => f && f.tipo === 'pix' && f.ativo !== false && (f.pixChave || f.pixQr));
+  const ligado = document.getElementById('aj-sinal-ativo').checked;
+  if (ligado && !pix) {
+    el.innerHTML = '<b>O sinal ainda não aparece no site.</b> Falta uma forma de pagamento Pix ativa com a chave preenchida (ou QR Code). Cadastre em Formas de pagamento, mais abaixo, e clique em salvar lá.';
+    el.style.display = '';
+  } else { el.style.display = 'none'; }
+}
+function renderPoliticasEditor() {
+  document.querySelectorAll('.aj-desc').forEach(d => { d.textContent = d.textContent.replace('O desconto de aniversário é aplicado por você na hora do atendimento.', 'O desconto de aniversário é automático: vale no mês do aniversário do cliente, uma vez por ano, e não soma com a fidelidade (vale o maior).'); });
+  const p = relPol();
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.value = v == null ? '' : v; };
+  const chk = (id, v) => { const e = document.getElementById(id); if (e) e.checked = !!v; };
+  chk('aj-sinal-ativo', p.sinalAtivo); set('aj-sinal-pct', p.sinalPct); set('aj-sinal-min', p.sinalMinPreco || ''); set('aj-sinal-total', p.sinalTotalAcima || '');
+  set('aj-cancel-horas', p.cancelHoras);
+  chk('aj-fid-ativo', p.fidelAtivo); set('aj-fid-cada', p.fidelCada); set('aj-fid-desc', p.fidelDescPct); set('aj-aniv-desc', p.aniversarioDescPct);
+  set('aj-aval-link', p.avalLink); set('aj-msg-aniv', p.msgAniversario); set('aj-msg-ret', p.msgRetorno); set('aj-msg-aval', p.msgAvaliacao);
+  ajStatus('aj-pol-status', ''); ajStatus('aj-pol2-status', '');
+  atualizarAvisoSinal();
+  const cb = document.getElementById('aj-sinal-ativo'); if (cb && !cb._av) { cb._av = true; cb.addEventListener('change', atualizarAvisoSinal); }
+}
+async function salvarPoliticas() {
+  const num = (id, min, max, padrao) => { const v = parseFloat(String(document.getElementById(id).value).replace(',', '.')); return isFinite(v) ? Math.min(max, Math.max(min, v)) : padrao; };
+  const txt = id => (document.getElementById(id).value || '').trim();
+  const link = txt('aj-aval-link');
+  if (link && !/^https?:\/\//i.test(link)) { ajStatus('aj-pol2-status', 'O link de avaliação precisa começar com https://', '#e05555'); return; }
+  const politicas = {
+    sinalAtivo: document.getElementById('aj-sinal-ativo').checked,
+    sinalPct: num('aj-sinal-pct', 1, 100, 30), sinalMinPreco: num('aj-sinal-min', 0, 100000, 0), sinalTotalAcima: num('aj-sinal-total', 0, 100000, 0),
+    cancelHoras: num('aj-cancel-horas', 0, 168, 2),
+    fidelAtivo: document.getElementById('aj-fid-ativo').checked,
+    fidelCada: Math.round(num('aj-fid-cada', 2, 50, 5)), fidelDescPct: num('aj-fid-desc', 1, 100, 20), aniversarioDescPct: num('aj-aniv-desc', 0, 100, 10),
+    avalLink: link, msgAniversario: txt('aj-msg-aniv'), msgRetorno: txt('aj-msg-ret'), msgAvaliacao: txt('aj-msg-aval'),
+  };
+  ['aj-pol-status', 'aj-pol2-status'].forEach(id => ajStatus(id, 'Salvando...'));
+  try {
+    await db.collection('config').doc('barbearia').set({ politicas, atualizadoEm: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+    await carregarAjustesRemotos();
+    renderPoliticasEditor();
+    ['aj-pol-status', 'aj-pol2-status'].forEach(id => ajStatus(id, 'Salvo! O site já usa as novas regras.', '#4caf50'));
+    showToast('Regras salvas.');
+  } catch (e) {
+    console.warn(e);
+    ['aj-pol-status', 'aj-pol2-status'].forEach(id => ajStatus(id, 'Erro ao salvar: ' + (e.message || e.code || e), '#e05555'));
+  }
+}
+
+// ── Ajustes: antes e depois (uma coleção, um documento por par, para não estourar o limite de 1 MB) ──
+let _adLista = [];
+const AD_MAX_CHARS = 300000;
+function adComprimir(arquivo) {
+  return new Promise((ok, erro) => {
+    if (!arquivo || !/^image\//.test(arquivo.type)) { erro(new Error('Escolha uma imagem.')); return; }
+    const r = new FileReader();
+    r.onerror = () => erro(new Error('Não consegui ler a imagem.'));
+    r.onload = () => {
+      const img = new Image();
+      img.onerror = () => erro(new Error('Imagem inválida.'));
+      img.onload = () => {
+        for (const max of [900, 720, 560, 420]) {
+          const esc = Math.min(1, max / Math.max(img.width, img.height));
+          const cv = document.createElement('canvas');
+          cv.width = Math.max(1, Math.round(img.width * esc)); cv.height = Math.max(1, Math.round(img.height * esc));
+          cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+          const url = cv.toDataURL('image/jpeg', 0.8);
+          if (url.length < AD_MAX_CHARS) { ok(url); return; }
+        }
+        erro(new Error('A imagem ficou pesada demais.'));
+      };
+      img.src = r.result;
+    };
+    r.readAsDataURL(arquivo);
+  });
+}
+async function carregarAntesDepoisAdmin() {
+  try {
+    const snap = await db.collection('antesdepois').get();
+    _adLista = snap.docs.map(d => Object.assign({ id: d.id }, d.data()))
+      .sort((x, y) => ((y.criadoEm && y.criadoEm.seconds) || 0) - ((x.criadoEm && x.criadoEm.seconds) || 0));
+  } catch (e) { console.warn('Antes e depois:', e); _adLista = []; }
+  renderAntesDepoisAdmin();
+}
+function renderAntesDepoisAdmin() {
+  const el = document.getElementById('aj-ad-lista'); if (!el) return;
+  if (!_adLista.length) { el.innerHTML = '<p class="rel-vazio" style="grid-column:1/-1;">Nenhum par cadastrado ainda.</p>'; return; }
+  el.innerHTML = _adLista.map(it =>
+    '<div class="ad-item"><div class="ad-par"><img src="' + it.antes + '" alt="Antes"><img src="' + it.depois + '" alt="Depois"></div>' +
+    (it.legenda ? '<div class="ad-leg">' + relEsc(it.legenda) + '</div>' : '') +
+    '<button type="button" title="Remover" onclick="removerAntesDepois(\'' + it.id + '\')">✕</button></div>').join('');
+}
+async function adicionarAntesDepois() {
+  const fa = document.getElementById('aj-ad-antes').files[0], fd = document.getElementById('aj-ad-depois').files[0];
+  if (!fa || !fd) { ajStatus('aj-ad-status', 'Escolha as duas fotos: antes e depois.', '#e05555'); return; }
+  if (_adLista.length >= 8) { ajStatus('aj-ad-status', 'Limite de 8 pares. Remova um para adicionar outro.', '#e05555'); return; }
+  const btn = document.getElementById('aj-ad-btn'); btn.disabled = true;
+  ajStatus('aj-ad-status', 'Enviando...');
+  try {
+    const [antes, depois] = await Promise.all([adComprimir(fa), adComprimir(fd)]);
+    await db.collection('antesdepois').add({ antes, depois, legenda: (document.getElementById('aj-ad-legenda').value || '').trim(), criadoEm: firebase.firestore.FieldValue.serverTimestamp() });
+    ['aj-ad-antes', 'aj-ad-depois', 'aj-ad-legenda'].forEach(id => { document.getElementById(id).value = ''; });
+    await carregarAntesDepoisAdmin();
+    ajStatus('aj-ad-status', 'Par adicionado! Já aparece no site.', '#4caf50');
+  } catch (e) {
+    console.warn(e);
+    ajStatus('aj-ad-status', 'Erro: ' + (e.message || e.code || e), '#e05555');
+  }
+  btn.disabled = false;
+}
+async function removerAntesDepois(id) {
+  if (!confirm('Remover este par de fotos do site?')) return;
+  try { await db.collection('antesdepois').doc(id).delete(); await carregarAntesDepoisAdmin(); showToast('Par removido.'); }
+  catch (e) { console.warn(e); alert('Não consegui remover. Tente de novo.'); }
+}
