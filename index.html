@@ -160,6 +160,17 @@
     </div>
   </section>
 
+  <!-- ANTES E DEPOIS -->
+  <section id="antes-depois" class="section ad-section" style="display:none">
+    <div class="section-header">
+      <span class="section-tag">ANTES E</span>
+      <h2>Depois</h2>
+      <div class="section-line"></div>
+    </div>
+    <p class="ad-intro">Arraste a barra para ver a transformação.</p>
+    <div class="ad-grid" id="ad-grid"></div>
+  </section>
+
   <!-- PLANOS -->
   <section id="planos" class="section plans-section">
     <div class="section-header">
@@ -254,6 +265,15 @@
     </div>
   </section>
 
+  <!-- AVALIAÇÃO -->
+  <section id="avaliacoes" class="section aval-section" style="display:none">
+    <div class="aval-box">
+      <h3>Gostou do atendimento?</h3>
+      <p>Sua avaliação ajuda outras pessoas a nos encontrar. Leva menos de um minuto.</p>
+      <a id="aval-link" class="aval-btn" href="#" target="_blank" rel="noopener">Avaliar o salão</a>
+    </div>
+  </section>
+
   <!-- MODAL LOGIN / CADASTRO -->
   <div class="modal-overlay" id="login-modal">
     <div class="modal-box login-modal-box">
@@ -327,6 +347,7 @@
       <div class="modal-icon">✓</div>
       <h3>Agendamento Enviado!</h3>
       <p>Seu pedido foi registrado com sucesso.</p>
+      <p id="success-sinal" style="display:none;"></p>
       <div id="success-pix-box" style="display:none;"></div>
       <button onclick="closeModal()">Fechar</button>
     </div>
