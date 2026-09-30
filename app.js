@@ -1,28 +1,19 @@
-// ── Recursos novos (antes/depois, avaliação, aviso do sinal) ─────────────────────
-// Este site foi criado antes desses recursos: em vez de mexer no index.html e no style.css,
-// o próprio app.js cria as seções e o CSS que faltam (e não faz nada se o index.html já os tiver).
-(function () {
-  if (!document.getElementById('novos-recursos-css')) {
-    const st = document.createElement('style'); st.id = 'novos-recursos-css';
-    st.textContent = "/* ── Fidelidade, sinal, remarcar, antes/depois, avaliação ── */\n.preco-antigo { opacity:.5; font-size:.8em; margin-right:4px; }\n.fid-box { background:#181818; border:1px solid #303030; border-radius:8px; padding:12px 14px; margin:0 0 14px; display:flex; flex-direction:column; gap:6px; font-family:'Roboto',sans-serif; font-size:13px; color:#ACACAC; }\n.fid-box strong { color:#F1EAD6; font-size:14px; }\n.fid-ganhou { border-color:#D9D9D9; background:rgba(217, 217, 217,0.08); }\n.fid-ganhou strong { color:#D9D9D9; }\n.fid-pontos { display:flex; gap:6px; }\n.fid-pontos i { width:18px; height:18px; border-radius:50%; border:1px solid #4A4A4A; display:inline-block; }\n.fid-pontos i.on { background:#D9D9D9; border-color:#D9D9D9; }\n.agd-sinal { font-family:'Roboto',sans-serif; font-size:12px; color:#ACACAC; margin-top:4px; }\n.agd-acoes { display:flex; gap:8px; flex-wrap:wrap; }\n.btn-remarcar { background:transparent; border:1px solid #4A4A4A; color:#F1EAD6; border-radius:6px; padding:8px 14px; cursor:pointer; font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:1px; text-transform:uppercase; }\n.btn-remarcar:active { background:rgba(217, 217, 217,0.15); }\n.nota-prazo { font-family:'Roboto',sans-serif; font-size:12px; color:#8E8E8E; margin:12px 0 0; line-height:1.5; }\n.sinal-ok { display:flex; gap:8px; align-items:flex-start; margin-top:14px; font-family:'Roboto',sans-serif; font-size:13px; color:#F1EAD6; text-align:left; cursor:pointer; }\n.sinal-ok input { margin-top:3px; accent-color:#D9D9D9; }\n#success-sinal { font-family:'Roboto',sans-serif; font-size:13px; color:#D9D9D9; margin-top:8px; }\n.remarcar-banner { display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; background:rgba(217, 217, 217,0.08); border:1px solid #D9D9D9; border-radius:8px; padding:12px 14px; margin:0 0 18px; font-family:'Roboto',sans-serif; font-size:13px; color:#F1EAD6; }\n.remarcar-banner div { display:flex; flex-direction:column; gap:2px; }\n.remarcar-banner span { color:#ACACAC; }\n.remarcar-banner button { background:transparent; border:1px solid #4A4A4A; color:#ACACAC; border-radius:6px; padding:8px 14px; cursor:pointer; font-size:12px; }\n.ad-section { text-align:center; }\n.ad-intro { font-family:'Roboto',sans-serif; color:#ACACAC; font-size:14px; margin:-8px 0 22px; }\n.ad-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; max-width:980px; margin:0 auto; }\n.ad-card { margin:0; }\n.ad-comp { position:relative; aspect-ratio:4/5; border-radius:10px; overflow:hidden; border:1px solid #303030; background:#181818; user-select:none; touch-action:pan-y; }\n.ad-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }\n.ad-antes { clip-path:inset(0 calc(100% - var(--pos)) 0 0); }\n.ad-linha { position:absolute; top:0; bottom:0; left:var(--pos); width:2px; background:#D9D9D9; transform:translateX(-1px); pointer-events:none; }\n.ad-linha::after { content:''; position:absolute; top:50%; left:50%; width:30px; height:30px; margin:-15px 0 0 -15px; border-radius:50%; background:#D9D9D9; box-shadow:0 0 0 3px rgba(11, 11, 11,0.6); }\n.ad-tag { position:absolute; top:10px; padding:4px 10px; border-radius:4px; background:rgba(11, 11, 11,0.75); color:#F1EAD6; font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; pointer-events:none; }\n.ad-tag-a { left:10px; } .ad-tag-d { right:10px; }\n.ad-range { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:ew-resize; margin:0; }\n.ad-card figcaption { font-family:'Roboto',sans-serif; font-size:13px; color:#ACACAC; margin-top:8px; }\n.aval-section { text-align:center; }\n.aval-box { max-width:520px; margin:0 auto; background:#181818; border:1px solid #303030; border-radius:12px; padding:28px 22px; }\n.aval-box h3 { margin:0 0 8px; color:#F1EAD6; }\n.aval-box p { margin:0 0 18px; color:#ACACAC; font-family:'Roboto',sans-serif; font-size:14px; line-height:1.6; }\n.aval-btn { display:inline-block; background:#D9D9D9; color:#0B0B0B; padding:12px 26px; border-radius:6px; text-decoration:none; font-family:'Oswald',sans-serif; letter-spacing:2px; text-transform:uppercase; font-size:13px; }\n@media (max-width: 600px) { .agd-acoes { width:100%; } .agd-acoes button { flex:1; } }";
-    document.head.appendChild(st);
-  }
-  function antes(idAlvo, html) {
-    const alvo = document.getElementById(idAlvo); if (!alvo) return;
-    const t = document.createElement('div'); t.innerHTML = html.trim();
-    alvo.parentNode.insertBefore(t.firstElementChild, alvo);
-  }
-  if (!document.getElementById('antes-depois')) antes('planos', "<section id=\"antes-depois\" class=\"section ad-section\" style=\"display:none\"><div class=\"section-header\"><span class=\"section-tag\">ANTES E</span><h2>Depois</h2><div class=\"section-line\"></div></div><p class=\"ad-intro\">Arraste a barra para ver a transformação.</p><div class=\"ad-grid\" id=\"ad-grid\"></div></section>");
-  if (!document.getElementById('avaliacoes')) antes('login-modal', "<section id=\"avaliacoes\" class=\"section aval-section\" style=\"display:none\"><div class=\"aval-box\"><h3>Gostou do atendimento?</h3><p>Sua avaliação ajuda outras pessoas a nos encontrar. Leva menos de um minuto.</p><a id=\"aval-link\" class=\"aval-btn\" href=\"#\" target=\"_blank\" rel=\"noopener\">Avaliar o salão</a></div></section>");
-  if (!document.getElementById('success-sinal')) {
-    const box = document.getElementById('success-pix-box');
-    if (box) { const p = document.createElement('p'); p.id = 'success-sinal'; p.style.display = 'none'; box.parentNode.insertBefore(p, box.nextSibling); }
-  }
-})();
-
 // ================================================
 //  App Principal (Cliente) — os dados da barbearia ficam no config.js
 // ================================================
+
+// Garante os padrões de sinal, fidelidade e mensagens mesmo se o config.js for de uma versão mais antiga.
+BARBEARIA.politicas = Object.assign({
+  sinalAtivo: true, sinalPct: 30, sinalMinPreco: 0, sinalTotalAcima: 0,   // sinal via Pix ao agendar (pagamento total acima de R$ X, se > 0)
+  cancelHoras: 2,                                                          // prazo mínimo (horas) para cancelar/remarcar pelo site; 0 = sem prazo
+  fidelAtivo: true, fidelCada: 5, fidelDescPct: 20,                        // a cada N atendimentos pagos, o próximo tem X% de desconto
+  aniversarioDescPct: 10,
+  retornoDescPct: 0, retornoDias: 45,                                      // desconto para quem está sem vir há N dias (0 = desligado)
+  avalLink: '',                                                            // link de avaliação (ex.: Google Meu Negócio)
+  msgAniversario: 'Olá, {nome}! Feliz aniversário! 🎉 A equipe da {barbearia} preparou um presente: {desconto} de desconto no seu próximo atendimento este mês. É só agendar pelo site.',
+  msgRetorno: 'Olá, {nome}! Faz um tempinho que você não passa na {barbearia}. Bora renovar o visual? Agende seu horário pelo site quando quiser.',
+  msgAvaliacao: 'Olá, {nome}! Obrigado por vir na {barbearia}. Se gostou do atendimento, pode nos avaliar? Leva menos de um minuto: {link}',
+}, BARBEARIA.politicas || {});
 
 let WHATSAPP_NUMBER = BARBEARIA.whatsapp;
 let WHATSAPP_NOTIFY = BARBEARIA.whatsappAvisos || BARBEARIA.whatsapp;
@@ -394,13 +385,18 @@ async function checarUsoPlano(data) {
   const lim = u && PLAN_LIMITS[u.plano];
   if (!lim || DEMO_MODE || !planoAtivo(u, data)) return null;
   const [ini, fim] = lim.por === 'semana' ? semanaDe(data) : lim.por === 'mes' ? mesDe(data) : [u.planoPagoEm || '0000-00-00', u.planoVenceEm];
+  // Mesma regra do painel: conta qualquer atendimento NÃO cancelado, dentro da janela, de um serviço
+  // coberto pelo plano, exceto os já gravados como "Limite do plano atingido" (esses foram cobrados).
+  const nomesCobertos = SERVICES.filter(sv => (PLAN_COVERAGE[u.plano] || []).includes(sv.id)).map(sv => sv.name);
   try {
     const snap = await comTimeout(firebase.firestore().collection('agendamentos')
       .where('telefone', '==', phoneKey(u.telefone || ''))
-      .where('status', 'in', ['agendado', 'confirmado', 'concluido'])
       .get());
     const usados = snap.docs.map(d => d.data())
-      .filter(a => a.data >= ini && a.data <= fim && Number(a.preco) === 0 && /^Plano /.test(a.obs || '')).length;
+      .filter(a => a.status !== 'cancelado'
+        && a.data >= ini && a.data <= fim
+        && nomesCobertos.includes(a.servico)
+        && !/^Limite do plano atingido/.test(a.obs || '')).length;
     return { atingido: usados >= lim.qtd, usados, qtd: lim.qtd, por: lim.por };
   } catch (e) {
     console.error('Uso do plano: erro ao consultar o Firestore. Bloqueando o benefício por segurança.', e);
@@ -414,6 +410,12 @@ function servicoCoberto(service) {
   return !!service && planoAtivo(currentUser) && PLAN_COVERAGE[currentUser.plano].includes(service.id) && !limitePlanoAtingido();
 }
 // ── Fidelidade: a cada N atendimentos pagos, o próximo tem desconto ──
+// Retorno: desconto automático para quem está há N dias sem vir (e não tem horário marcado)
+function retornoDisponivel() {
+  const p = BARBEARIA.politicas || {};
+  return !!(Number(p.retornoDescPct) > 0 && currentUser && currentUser.retornoOk === true);
+}
+function rotuloDesconto(tipo) { return tipo === 'aniversario' ? 'Aniversário' : tipo === 'retorno' ? 'Retorno' : 'Fidelidade'; }
 function fidelDisponivel() {
   const p = BARBEARIA.politicas || {};
   return !!(p.fidelAtivo && currentUser && currentUser.fid && currentUser.fid.disponiveis > 0);
@@ -432,8 +434,10 @@ function descontoAtual() {
   const p = BARBEARIA.politicas || {};
   const f = fidelDisponivel() ? Math.min(100, Math.max(0, Number(p.fidelDescPct) || 0)) : 0;
   const n = aniversarioDisponivel() ? Math.min(100, Math.max(0, Number(p.aniversarioDescPct) || 0)) : 0;
-  if (f <= 0 && n <= 0) return null;
-  return n > f ? { pct: n, tipo: 'aniversario' } : { pct: f, tipo: 'fidelidade' };
+  const r = retornoDisponivel() ? Math.min(100, Math.max(0, Number(p.retornoDescPct) || 0)) : 0;
+  let melhor = null;   // vale o maior desconto; não soma. Em empate, fidelidade > aniversário > retorno
+  [{ pct: f, tipo: 'fidelidade' }, { pct: n, tipo: 'aniversario' }, { pct: r, tipo: 'retorno' }].forEach(x => { if (x.pct > 0 && (!melhor || x.pct > melhor.pct)) melhor = x; });
+  return melhor;
 }
 function precoCobrado(service) {
   if (servicoCoberto(service)) return 0;
@@ -449,15 +453,18 @@ function descontoFidelidade(service) {
 async function refreshFidelidade() {
   const p = BARBEARIA.politicas || {};
   if (!currentUser || DEMO_MODE) return;
-  if (!p.fidelAtivo && !(Number(p.aniversarioDescPct) > 0)) { currentUser.fid = null; return; }
+  if (!p.fidelAtivo && !(Number(p.aniversarioDescPct) > 0) && !(Number(p.retornoDescPct) > 0)) { currentUser.fid = null; currentUser.retornoOk = false; return; }
   try {
     const snap = await comTimeout(firebase.firestore().collection('agendamentos')
       .where('telefone', '==', phoneKey(currentUser.telefone || ''))
       .where('status', 'in', ['agendado', 'confirmado', 'concluido'])
       .get());
-    let contados = 0, usados = 0, anivAno = null;
+    let contados = 0, usados = 0, anivAno = null, ultima = '', temFuturo = false;
+    const hoje = hojeISO();
     snap.docs.forEach(d => {
       const ag = d.data();
+      if (ag.data && ag.data <= hoje && ag.data > ultima) ultima = ag.data;
+      if (ag.data && ag.data >= hoje && ['agendado', 'confirmado'].includes(ag.status)) temFuturo = true;
       if (ag.aniversario) anivAno = Math.max(anivAno || 0, Number(ag.aniversario) || 0);
       if (ag.fidelidade) { usados++; return; }
       if (ag.status === 'concluido' && Number(ag.preco) > 0) contados++;
@@ -466,6 +473,10 @@ async function refreshFidelidade() {
     const ganhos = Math.floor(contados / cada);
     currentUser.fid = p.fidelAtivo ? { contados, cada, usados, disponiveis: Math.max(0, ganhos - usados), noCiclo: contados % cada } : null;
     currentUser.anivUsadoAno = anivAno;
+    // Retorno: já veio antes, faz pelo menos N dias e não tem horário marcado
+    const diasRet = Math.max(1, parseInt(p.retornoDias, 10) || 45);
+    const diasSemVir = ultima ? Math.round((new Date(hoje + 'T12:00:00') - new Date(ultima + 'T12:00:00')) / 86400000) : 0;
+    currentUser.retornoOk = !!(Number(p.retornoDescPct) > 0 && ultima && !temFuturo && diasSemVir >= diasRet);
     saveSession(currentUser);
   } catch (e) { console.warn('Fidelidade:', e); currentUser.fid = null; }
 }
@@ -474,6 +485,10 @@ function htmlFidelidade() {
   const f = currentUser && currentUser.fid;
   if (aniversarioDisponivel()) {
     return `<div class="fid-box fid-ganhou"><strong>Feliz aniversário! ${p.aniversarioDescPct}% de desconto</strong><span>Vale no seu próximo atendimento pago este mês, aplicado na hora de agendar.</span></div>` + ((p.fidelAtivo && f) ? '' : '');
+  }
+  const dAtual = descontoAtual();
+  if (dAtual && dAtual.tipo === 'retorno') {
+    return `<div class="fid-box fid-ganhou"><strong>Sentimos sua falta! ${dAtual.pct}% de desconto</strong><span>Vale no seu próximo atendimento pago, aplicado na hora de agendar.</span></div>`;
   }
   if (!p.fidelAtivo || !f) return '';
   if (f.disponiveis > 0) {
@@ -527,7 +542,7 @@ function extraConfirmHTML(sel) {
   const p = BARBEARIA.politicas || {};
   let h = '';
   const dsc = descontoAtual();
-  if (dsc && descontoFidelidade(sel) > 0) h += `<div class="confirm-row"><label>${dsc.tipo === 'aniversario' ? 'Aniversário' : 'Fidelidade'}</label><span style="font-size:13px;">${dsc.pct}% de desconto: -${R(descontoFidelidade(sel))}</span></div>`;
+  if (dsc && descontoFidelidade(sel) > 0) h += `<div class="confirm-row"><label>${rotuloDesconto(dsc.tipo)}</label><span style="font-size:13px;">${dsc.pct}% de desconto: -${R(descontoFidelidade(sel))}</span></div>`;
   const sinal = sinalDoServico(sel);
   if (sinal > 0) {
     const resto = Math.round((precoCobrado(sel) - sinal) * 100) / 100;
@@ -1361,7 +1376,7 @@ function sendWhatsAppNotification() {
       ? '*Valor:* Incluso no plano ' + nomeDoPlano(currentUser.plano) + ' (sem cobrança)'
       : '*Valor:* R$' + precoCobrado(sel).toFixed(2).replace('.', ','),
   ];
-  if (descontoFidelidade(sel) > 0 && descontoAtual()) lines.push('*' + (descontoAtual().tipo === 'aniversario' ? 'Aniversário' : 'Fidelidade') + ':* desconto de ' + descontoAtual().pct + '% aplicado');
+  if (descontoFidelidade(sel) > 0 && descontoAtual()) lines.push('*' + rotuloDesconto(descontoAtual().tipo) + ':* desconto de ' + descontoAtual().pct + '% aplicado');
   if (Number(state.sinal) > 0) lines.push('*Sinal (Pix):* R$' + Number(state.sinal).toFixed(2).replace('.', ',') + ' - o cliente vai enviar o comprovante');
   if (!servicoCoberto(sel) && state.formaPagamento) {
     const forma = formaPagamentoPorId(state.formaPagamento);
@@ -1425,11 +1440,14 @@ window.submitBooking = async function() {
       if (state.sinal > 0) { novo.sinal = state.sinal; novo.sinalPago = false; }
       const dscAtual = descontoAtual();
       if (dscAtual && descontoFidelidade(state.selected) > 0) {
-        if (dscAtual.tipo === 'aniversario') novo.aniversario = new Date().getFullYear(); else novo.fidelidade = true;
+        if (dscAtual.tipo === 'aniversario') novo.aniversario = new Date().getFullYear();
+        else if (dscAtual.tipo === 'retorno') novo.retorno = true;
+        else novo.fidelidade = true;
         novo.precoOriginal = Number(state.selected.price);
       }
       await firebase.firestore().collection('agendamentos').add(novo);
       if (novo.aniversario && currentUser) { currentUser.anivUsadoAno = novo.aniversario; saveSession(currentUser); }
+      if (novo.retorno && currentUser) { currentUser.retornoOk = false; saveSession(currentUser); }
       sendWhatsAppNotification();
       // (confirmação para o cliente desativada: o agendamento vai só para o WhatsApp da barbearia)
     }
