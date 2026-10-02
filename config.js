@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════
-//  CONFIGURAÇÃO DA BARBEARIA — Isabelle Rocha
-//  Arquivo gerado por criar-barbearia.html. Depois de instalado, nome, logo, WhatsApp e
+//  CONFIGURAÇÃO DO SITE — Isabelle Rocha
+//  Arquivo gerado por criar-sistema.html. Depois de instalado, nome, logo, WhatsApp e
 //  planos podem ser mudados pela aba "Ajustes" do painel (as cores também), sem editar este arquivo.
 // ═══════════════════════════════════════════════════════════════════
 const BARBEARIA = {
@@ -11,6 +11,8 @@ const BARBEARIA = {
   whatsapp: "558592381863",
   whatsappAvisos: "558592381863",
   modoDemonstracao: false,
+  tipoNegocio: "sobrancelha",   // barbearia ou sobrancelha
+  geradoEm: "2026-10-02",
   firebase: {
     "apiKey": "AIzaSyDRLwKdCG8UdXKvmvF_1lsTCH6_QzfAZrA",
     "authDomain": "isabella-rocha.firebaseapp.com",
@@ -76,6 +78,7 @@ const BARBEARIA = {
   fonte: "assinatura",   // letra do nome no topo (mudável na aba Ajustes do painel)
 };
 
+const VERSAO_CONFIG = '2026.10.1';   // versão do config.js (conferida no painel, em Ajustes > Sobre o sistema)
 // ═══════════════════════════════════════════════════════════════════
 //  A partir daqui não precisa mexer.
 // ═══════════════════════════════════════════════════════════════════
