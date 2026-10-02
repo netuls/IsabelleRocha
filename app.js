@@ -2,6 +2,8 @@
 //  App Principal (Cliente) — os dados da barbearia ficam no config.js
 // ================================================
 
+// Versão do código deste site (aparece no painel, em Ajustes > Sobre o sistema)
+const VERSAO_SISTEMA = '2026.10.1';
 // Garante os padrões de sinal, fidelidade e mensagens mesmo se o config.js for de uma versão mais antiga.
 BARBEARIA.politicas = Object.assign({
   sinalAtivo: true, sinalPct: 30, sinalMinPreco: 0, sinalTotalAcima: 0,   // sinal via Pix ao agendar (pagamento total acima de R$ X, se > 0)
@@ -11,9 +13,9 @@ BARBEARIA.politicas = Object.assign({
   retornoDescPct: 0, retornoDias: 45,                                      // desconto para quem está sem vir há N dias (0 = desligado)
   fidelTipo: 'desconto', fidelServicoId: '', aniversarioTipo: 'desconto', aniversarioServicoId: '', retornoTipo: 'desconto', retornoServicoId: '',   // prêmio de cada benefício: 'desconto' (%) ou 'servico' (cortesia)
   avalLink: '',                                                            // link de avaliação (ex.: Google Meu Negócio)
-  msgAniversario: 'Olá, {nome}! Feliz aniversário! 🎉 A equipe da {barbearia} preparou um presente: {desconto} de desconto no seu próximo atendimento este mês. É só agendar pelo site.',
-  msgRetorno: 'Olá, {nome}! Faz um tempinho que você não passa na {barbearia}. Bora renovar o visual? Agende seu horário pelo site quando quiser.',
-  msgAvaliacao: 'Olá, {nome}! Obrigado por vir na {barbearia}. Se gostou do atendimento, pode nos avaliar? Leva menos de um minuto: {link}',
+  msgAniversario: 'Olá, {nome}! Feliz aniversário! 🎉 A equipe de {salao} preparou um presente: {desconto} de desconto no seu próximo atendimento este mês. É só agendar pelo site.',
+  msgRetorno: 'Olá, {nome}! Faz um tempinho que a gente não te vê por aqui ({salao}). Bora renovar o olhar? Agende seu horário pelo site quando quiser.',
+  msgAvaliacao: 'Olá, {nome}! Obrigado pela visita ({salao}). Se gostou do atendimento, pode nos avaliar? Leva menos de um minuto: {link}',
 }, BARBEARIA.politicas || {});
 
 let WHATSAPP_NUMBER = BARBEARIA.whatsapp;
